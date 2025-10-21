@@ -1,0 +1,46 @@
+/* public/styles/tokens.css */
+/* Design Tokens: colors, spacing, fonts */
+:root {
+  /* font stacks */
+  --font-body-stack: "Exo 2", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --font-display-stack: "Orbitron", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono-stack: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* sizes */
+  --font-size-1: .875rem; /* 14 */
+  --font-size-2: 1rem;    /* 16 */
+  --font-size-3: 1.125rem;/* 18 */
+  --font-size-4: 1.25rem; /* 20 */
+  --font-size-5: 1.5rem;  /* 24 */
+  --font-size-6: 2rem;    /* 32 */
+  --font-size-7: 2.5rem;  /* 40 */
+
+  --leading-tight: 1.2;
+  --leading-normal: 1.6;
+  /* colors */
+  --color-background-page: #0b1220;
+  --color-background-header: #111827;
+  --color-surface-1: #0f172a;
+  --color-accent: #22c55e;
+  --color-link: var(--color-accent);
+  --color-link-hover: #4ade80;
+  --color-text: #e5e7eb;
+  --color-text-muted: #9ca3af;
+  --color-text-inverted: #ffffff;
+  --color-border: rgba(255,255,255,0.12);
+
+  /* spacing & radius */
+  --space-1: .5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --radius-2xl: 12px;
+
+  /* font families */
+  --font-sans: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
