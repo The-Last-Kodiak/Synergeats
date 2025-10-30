@@ -43,4 +43,17 @@
 
   /* font families */
   --font-sans: system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+
+}
+
+body.light-mode {
+  --color-background-page: #f8fafc;      /* very light slate */
+  --color-background-header: #ffffff;    /* white header */
+  --color-surface-1: #ffffff;            /* card surfaces white */
+  --color-text: #111827;                 /* near-black text */
+  --color-text-muted: #4b5563;           /* muted gray */
+  --color-text-inverted: #111827;        /* header text on light bg should be dark */
+  --color-link: #16a34a;                 /* green 600 */
+  --color-link-hover: #15803d;           /* green 700 */
+  --color-border: rgba(0,0,0,0.12);      /* subtle borders on light */
 }
