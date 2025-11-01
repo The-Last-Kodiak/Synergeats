@@ -5,11 +5,19 @@
   "main": "public/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "http-server"
+    "start": "http-server",
+    "dev": "npx vite",
+    "build": "npx tsc && npx vite build"
   },
   "author": "Zaid Zarate",
   "license": "ISC",
   "dependencies": {
-    "http-server": "^14.1.1"
+    "@calpoly/mustang": "^1.0.15",
+    "http-server": "^14.1.1",
+    "lit": "^3.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vite": "^7.1.12"
   }
 }
