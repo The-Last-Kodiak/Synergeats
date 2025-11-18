@@ -1,103 +1,87 @@
-// packages/proto/src/meal-card.ts
 import { html, css, LitElement } from "lit";
 import { property } from "lit/decorators.js";
 
 export class MealCardElement extends LitElement {
-  // Attributes mapped to properties
+  // Attributes
   @property({ attribute: "img-src" }) imgSrc?: string;
   @property() href?: string;
-  @property() calories?: string;
-  @property() protein?: string;
-  @property() carbs?: string;
-  @property() fat?: string;
+
+  @property({ type: Number }) calories?: number;
+  @property({ type: Number }) protein?: number;
+  @property({ type: Number }) carbs?: number;
+  @property({ type: Number }) fat?: number;
+
+  // Default slot = meal name
+  // <span slot="tags">…</span> for tags
 
   override render() {
     return html`
       <article class="card">
-        ${this.imgSrc
-          ? html`<img src="${this.imgSrc}" alt="${this.textContent}" />`
-          : html`<div class="placeholder"></div>`}
-        <h3><a href="${this.href}"><slot></slot></a></h3>
-        <p class="tags"><slot name="tags"></slot></p>
-        <dl class="macros">
-          <dt>Calories</dt><dd>${this.calories}</dd>
-          <dt>Protein</dt><dd>${this.protein} g</dd>
-          <dt>Carbs</dt><dd>${this.carbs} g</dd>
-          <dt>Fat</dt><dd>${this.fat} g</dd>
-        </dl>
+        ${this.imgSrc ? html`
+          <a class="thumb" href=${this.href ?? "#"} aria-label="Open meal">
+            <img src=${this.imgSrc} alt="" loading="lazy" />
+          </a>` : null}
+
+        <div class="content">
+          <h3 class="title">
+            <a href=${this.href ?? "#"}><slot></slot></a>
+          </h3>
+
+          <p class="tags"><slot name="tags"></slot></p>
+
+          <dl class="macros">
+            <div><dt>Calories</dt><dd>${this.calories ?? "—"}</dd></div>
+            <div><dt>Protein</dt><dd>${this.protein ?? "—"} g</dd></div>
+            <div><dt>Carbs</dt><dd>${this.carbs ?? "—"} g</dd></div>
+            <div><dt>Fat</dt><dd>${this.fat ?? "—"} g</dd></div>
+          </dl>
+        </div>
       </article>
     `;
   }
 
   static styles = css`
-    :host {
-      display: block;
-      max-width: 320px;
-      margin: 1rem auto;
-      font-family: var(--font-body-stack);
-    }
-
-    article.card {
-      display: grid;
-      gap: 0.5rem;
+    :host { display:block; }
+    .card {
       background: var(--color-surface-1);
-      padding: 1rem;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-2xl);
-      text-align: center;
-      color: var(--color-text);
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 1rem;
+      padding: 1rem;
     }
-
-    img, .placeholder {
+    .thumb img {
       width: 100%;
-      height: 180px;
+      height: 100%;
       object-fit: cover;
-      background: rgba(255, 255, 255, 0.06);
-      border-bottom: 1px solid var(--color-border);
-      border-radius: 10px;
+      border-radius: calc(var(--radius-2xl) - 6px);
       display: block;
     }
-
-    .placeholder {
-      background: linear-gradient(135deg, #333, #111);
-    }
-
-    h3 {
+    .content { display:grid; gap:.5rem; align-content:start; }
+    .title {
       font-family: var(--font-display-stack);
-      font-size: var(--font-size-4);
-      margin: 0.25rem 0;
-    }
-
-    a {
-      color: var(--color-link);
-      text-decoration: none;
-    }
-
-    a:hover {
-      color: var(--color-link-hover);
-      text-decoration: underline;
-    }
-
-    .tags {
-      font-size: var(--font-size-1);
-      color: var(--color-text-muted);
-    }
-
-    dl.macros {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 0.25rem 1rem;
-      font-size: var(--font-size-2);
-    }
-
-    dt {
-      font-weight: 600;
-      color: var(--color-text-muted);
-    }
-
-    dd {
+      line-height: var(--leading-tight);
       margin: 0;
-      text-align: left;
+      font-size: var(--font-size-4);
+      font-weight: var(--font-weight-semibold);
+    }
+    .title a { color: var(--color-text); text-decoration: none; }
+    .title a:hover { color: var(--color-link-hover); text-decoration: underline; }
+
+    .tags { color: var(--color-text-muted); margin: 0; }
+
+    .macros {
+      display:grid;
+      grid-template-columns: repeat(4, auto);
+      gap: 1rem 1.5rem;
+      margin: .25rem 0 0;
+    }
+    .macros div { display:grid; gap:.25rem; }
+    dt { color: var(--color-text-muted); font-weight: 600; }
+    dd { margin:0; }
+    @media (max-width: 640px) {
+      .card { grid-template-columns: 1fr; }
     }
   `;
 }

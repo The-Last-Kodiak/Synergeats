@@ -20,7 +20,16 @@
     <link rel="stylesheet" href="/styles/layout.css" />
 
     <!-- dark mode toggle logic -->
-    <script type="module" src="/scripts/mode.js"></script>
+    <script type="module" src="/scripts/mode.js">
+    import { define } from "@calpoly/mustang";
+    import { MealCardElement } from "/src/meal-card.ts";
+    import { MealListElement } from "/src/meal-list.ts";
+
+    define({
+    "sg-meal-card": MealCardElement,
+    "sg-meal-list": MealListElement
+    });
+    </script>
   </head>
 
   <body>
@@ -80,13 +89,7 @@
         </ul>
       </section>
 
-      <section class="span-6 card" aria-labelledby="meals">
-        <h2 id="meals">Menu Meals (weekly)</h2>
-        <ul class="clean">
-          <li><a href="/menu-meal-chicken-bowl.html">High-Protein Chicken Bowl</a></li>
-          <li><a href="/menu-meal-tofu-stirfry.html">Vegan Tofu Stir-Fry</a></li>
-        </ul>
-      </section>
+      <sg-meal-list src="/data/meals.json"></sg-meal-list>
     </main>
 
     <footer>
