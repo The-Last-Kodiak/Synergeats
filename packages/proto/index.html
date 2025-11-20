@@ -20,7 +20,10 @@
     <link rel="stylesheet" href="/styles/layout.css" />
 
     <!-- dark mode toggle logic -->
-    <script type="module" src="/scripts/mode.js">
+     <script type="module" src="/scripts/mode.js"></script>
+     
+    <!-- register custom elements (Lit + Mustang) -->
+    <script type="module">
     import { define } from "@calpoly/mustang";
     import { MealCardElement } from "/src/meal-card.ts";
     import { MealListElement } from "/src/meal-list.ts";
@@ -89,7 +92,7 @@
         </ul>
       </section>
 
-      <sg-meal-list src="/data/meals.json"></sg-meal-list>
+      <sg-meal-list class="span-6" src="/api/meals"></sg-meal-list>
     </main>
 
     <footer>

@@ -13,3 +13,4 @@ Thumbs.db
 
 # VSCode settings (optional, safe to ignore)
 .vscode/
+.env

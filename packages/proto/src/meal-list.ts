@@ -1,3 +1,4 @@
+// src/meal-list.ts
 import { html, css, LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
 
@@ -5,7 +6,7 @@ type Meal = {
   name: string;
   href: string;
   imgSrc?: string;
-  tags?: string;
+  tags?: string[] | string;
   calories?: number;
   protein?: number;
   carbs?: number;
@@ -29,7 +30,6 @@ export class MealListElement extends LitElement {
         return res.json();
       })
       .then((json: unknown) => {
-        // Expecting an array of meals
         if (Array.isArray(json)) {
           this.meals = json as Meal[];
         } else {
@@ -42,11 +42,13 @@ export class MealListElement extends LitElement {
 
   override render() {
     return html`
-      <section class="card" aria-labelledby="meals">
-        <h2 id="meals">Menu Meals (weekly)</h2>
-        <ul class="grid">
-          ${this.meals.map(
-            (m) => html`
+      <section class="card" aria-labelledby="meals-heading">
+        <h2 id="meals-heading">Menu Meals (weekly)</h2>
+        <ul class="list">
+          ${this.meals.map((m) => {
+            const tags =
+              Array.isArray(m.tags) ? m.tags.join(" • ") : m.tags ?? "";
+            return html`
               <li>
                 <sg-meal-card
                   img-src=${m.imgSrc ?? ""}
@@ -57,35 +59,47 @@ export class MealListElement extends LitElement {
                   .fat=${m.fat ?? undefined}
                 >
                   ${m.name}
-                  ${m.tags
-                    ? html`<span slot="tags">${m.tags}</span>`
+                  ${tags
+                    ? html`<span slot="tags">${tags}</span>`
                     : null}
                 </sg-meal-card>
               </li>
-            `
-          )}
+            `;
+          })}
         </ul>
       </section>
     `;
   }
 
   static styles = css`
-    :host { display:block; }
-    .card {
+    :host {
+      display: block;
+    }
+
+    section.card {
       background: var(--color-surface-1);
       border: 1px solid var(--color-border);
       border-radius: var(--radius-2xl);
-      padding: 1rem;
+      padding: 1.25rem 1.5rem;
     }
-    h2 { margin: 0 0 .5rem 0; font-family: var(--font-display-stack); }
-    ul.grid {
+
+    h2 {
+      margin: 0 0 0.75rem 0;
+      font-family: var(--font-display-stack);
+    }
+
+    ul.list {
       list-style: none;
-      margin: 0; padding: 0;
-      display: grid;
-      grid-template-columns: repeat(12, minmax(0, 1fr));
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
       gap: 1rem;
     }
-    li { grid-column: span 6; }
-    @media (max-width: 900px) { li { grid-column: span 12; } }
+
+    li {
+      margin: 0;
+      padding: 0;
+    }
   `;
 }

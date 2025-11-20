@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Grilled Chicken Power Bowl",
+    "href": "/menu-meal-chicken-bowl.html",
+    "imgSrc": "/images/meals/chicken-bowl.jpg",
+    "tags": "High-Protein • Gluten-Free",
+    "calories": 520,
+    "protein": 42,
+    "carbs": 55,
+    "fat": 18
+  },
+  {
+    "name": "Tofu Veggie Stir-Fry",
+    "href": "/menu-meal-tofu-stirfry.html",
+    "imgSrc": "/images/meals/tofu-stirfry.jpg",
+    "tags": "Vegan • High-Fiber",
+    "calories": 470,
+    "protein": 28,
+    "carbs": 60,
+    "fat": 14
+  }
+]
