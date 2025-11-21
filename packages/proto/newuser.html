@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script type="module">
+    import { define, Auth } from "@calpoly/mustang";
+    import { LoginFormElement } from "/src/auth/login-form.ts";
+
+    define({
+      "mu-auth": Auth.Provider,
+      "login-form": LoginFormElement
+    });
+  </script>
+</head>
+
+<body class="page">
+  <mu-auth provides="Synergeats:auth">
+    <h2>Sign Up</h2>
+
+    <main class="card">
+      <login-form api="/auth/register" redirect="/login.html">
+        <label>
+          <span>Username:</span>
+          <input name="username" autocomplete="off" />
+        </label>
+
+        <label>
+          <span>Password:</span>
+          <input type="password" name="password" />
+        </label>
+
+        <span slot="button">
+          <button type="submit">Create Account</button>
+        </span>
+      </login-form>
+    </main>
+
+    <p>
+      Already have an account?
+      <a href="/login.html">Log in</a>
+    </p>
+  </mu-auth>
+</body>
+</html>

@@ -27,18 +27,22 @@
     import { define, Auth } from "@calpoly/mustang";
     import { MealCardElement } from "/src/meal-card.ts";
     import { MealListElement } from "/src/meal-list.ts";
+    import { HeaderElement } from "/src/header.ts";
 
     define({
     "mu-auth": Auth.Provider,
     "sg-meal-card": MealCardElement,
-    "sg-meal-list": MealListElement
+    "sg-meal-list": MealListElement,
+    "sg-header": HeaderElement
     });
+
+    HeaderElement.initializeOnce();
     </script>
   </head>
 
-  <body>
+  <body class="page">
     <mu-auth provides="Synergeats:auth">
-      <header class="app-header">
+      <sg-header>
         <h1>
           Synergeats — Prototype<br />
           Index
@@ -56,7 +60,7 @@
           />
           <span>Light mode</span>
         </label>
-      </header>
+      </sg-header>
 
       <main class="page-grid">
         <section class="span-6 card" aria-labelledby="customer">
