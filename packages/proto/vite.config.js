@@ -2,14 +2,15 @@ import { defineConfig } from "vite";
 import { resolve } from "path";
 
 export default defineConfig({
-  root: ".", // ensures proto is the root
-  publicDir: "public", // serve your static files
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, "index.html")
+        // main app (your existing index.html)
+        main: resolve(__dirname, "index.html"),
+
+        // 👇 add login.html as a second entry page (Lab 12 login page)
+        login: resolve(__dirname, "login.html")
       }
-    },
-    outDir: "dist"
+    }
   }
 });

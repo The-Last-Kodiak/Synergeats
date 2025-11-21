@@ -1,8 +1,10 @@
 // src/meal-list.ts
 import { html, css, LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
+import { Auth, Observer } from "@calpoly/mustang";
 
 type Meal = {
+  id?: string;
   name: string;
   href: string;
   imgSrc?: string;
@@ -18,20 +20,57 @@ export class MealListElement extends LitElement {
 
   @state() private meals: Meal[] = [];
 
+  // Auth observer for JWT token access
+  private _authObserver = new Observer<Auth.Model>(this, "Synergeats:auth");
+  private _user?: Auth.User;
+
   connectedCallback(): void {
     super.connectedCallback();
+
+    // Watch authentication state
+    this._authObserver.observe((auth: Auth.Model) => {
+      this._user = auth.user;
+      if (this.src) this.hydrate(this.src); // reload data when auth changes
+    });
+
     if (this.src) this.hydrate(this.src);
   }
 
+  /**
+   * Returns an Authorization header if logged in, otherwise undefined
+   */
+  get authorization(): HeadersInit | undefined {
+    if (
+      this._user &&
+      this._user.authenticated &&
+      "token" in this._user
+    ) {
+      return {
+        Authorization: `Bearer ${this._user.token}`
+      };
+    }
+    return undefined;
+  }
+
+  /**
+   * Fetch the meals from the API using auth headers
+   */
   private hydrate(src: string) {
-    fetch(src)
+    fetch(src, {
+      headers: this.authorization
+    })
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         return res.json();
       })
       .then((json: unknown) => {
         if (Array.isArray(json)) {
-          this.meals = json as Meal[];
+          this.meals = json.map((m: any) => ({
+            ...m,
+            tags: Array.isArray(m.tags)
+              ? m.tags.join(" • ")
+              : m.tags
+          })) as Meal[];
         } else {
           console.warn("Expected an array in JSON:", json);
           this.meals = [];
@@ -45,27 +84,23 @@ export class MealListElement extends LitElement {
       <section class="card" aria-labelledby="meals-heading">
         <h2 id="meals-heading">Menu Meals (weekly)</h2>
         <ul class="list">
-          ${this.meals.map((m) => {
-            const tags =
-              Array.isArray(m.tags) ? m.tags.join(" • ") : m.tags ?? "";
-            return html`
-              <li>
-                <sg-meal-card
-                  img-src=${m.imgSrc ?? ""}
-                  href=${m.href ?? "#"}
-                  .calories=${m.calories ?? undefined}
-                  .protein=${m.protein ?? undefined}
-                  .carbs=${m.carbs ?? undefined}
-                  .fat=${m.fat ?? undefined}
-                >
-                  ${m.name}
-                  ${tags
-                    ? html`<span slot="tags">${tags}</span>`
-                    : null}
-                </sg-meal-card>
-              </li>
-            `;
-          })}
+          ${this.meals.map((m) => html`
+            <li>
+              <sg-meal-card
+                img-src=${m.imgSrc ?? ""}
+                href=${m.href ?? "#"}
+                .calories=${m.calories}
+                .protein=${m.protein}
+                .carbs=${m.carbs}
+                .fat=${m.fat}
+              >
+                ${m.name}
+                ${m.tags
+                  ? html`<span slot="tags">${m.tags}</span>`
+                  : null}
+              </sg-meal-card>
+            </li>
+          `)}
         </ul>
       </section>
     `;

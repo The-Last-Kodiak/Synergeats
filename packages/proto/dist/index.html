@@ -23,71 +23,74 @@
      <script type="module" src="/scripts/mode.js"></script>
      
     <!-- register custom elements (Lit + Mustang) -->
-    <script type="module" crossorigin src="/assets/main-CejxQ86U.js"></script>
+    <script type="module" crossorigin src="/assets/main-0L45MSHs.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/state-BFvJTQ8F.js">
   </head>
 
   <body>
-    <header class="app-header">
-      <h1>
-        Synergeats — Prototype<br />
-        Index
-      </h1>
+    <mu-auth provides="Synergeats:auth">
+      <header class="app-header">
+        <h1>
+          Synergeats — Prototype<br />
+          Index
+        </h1>
 
-      <p>
-        Entry point for Lab 8 (custom view element).
-      </p>
+        <p>
+          Entry point for Lab 8 (custom view element).
+        </p>
 
-      <label id="mode-switch" class="mode-switch">
-        <input
-          id="mode-checkbox"
-          type="checkbox"
-          autocomplete="off"
-        />
-        <span>Light mode</span>
-      </label>
-    </header>
+        <label id="mode-switch" class="mode-switch">
+          <input
+            id="mode-checkbox"
+            type="checkbox"
+            autocomplete="off"
+          />
+          <span>Light mode</span>
+        </label>
+      </header>
 
-    <main class="page-grid">
-      <section class="span-6 card" aria-labelledby="customer">
-        <h2 id="customer">Customer Profile</h2>
-        <ul class="clean">
-          <li><a href="/customer-profile.html">Zaid's Profile</a></li>
-        </ul>
-      </section>
+      <main class="page-grid">
+        <section class="span-6 card" aria-labelledby="customer">
+          <h2 id="customer">Customer Profile</h2>
+          <ul class="clean">
+            <li><a href="/customer-profile.html">Zaid's Profile</a></li>
+          </ul>
+        </section>
 
-      <section class="span-6 card" aria-labelledby="prefs">
-        <h2 id="prefs">Dietary Preferences</h2>
-        <ul class="clean">
-          <li><a href="/dietary-preferences.html">Zaid's Preferences</a></li>
-        </ul>
-      </section>
+        <section class="span-6 card" aria-labelledby="prefs">
+          <h2 id="prefs">Dietary Preferences</h2>
+          <ul class="clean">
+            <li><a href="/dietary-preferences.html">Zaid's Preferences</a></li>
+          </ul>
+        </section>
 
-      <section class="span-6 card" aria-labelledby="goals">
-        <h2 id="goals">Goals</h2>
-        <ul class="clean">
-          <li><a href="/goals.html">October Goals</a></li>
-        </ul>
-      </section>
+        <section class="span-6 card" aria-labelledby="goals">
+          <h2 id="goals">Goals</h2>
+          <ul class="clean">
+            <li><a href="/goals.html">October Goals</a></li>
+          </ul>
+        </section>
 
-      <section class="span-6 card" aria-labelledby="schedule">
-        <h2 id="schedule">Eating Schedule</h2>
-        <ul class="clean">
-          <li><a href="/eating-schedule.html">Weekly Schedule</a></li>
-        </ul>
-      </section>
+        <section class="span-6 card" aria-labelledby="schedule">
+          <h2 id="schedule">Eating Schedule</h2>
+          <ul class="clean">
+            <li><a href="/eating-schedule.html">Weekly Schedule</a></li>
+          </ul>
+        </section>
 
-      <section class="span-6 card" aria-labelledby="plan">
-        <h2 id="plan">Meal Plan (Subscription)</h2>
-        <ul class="clean">
-          <li><a href="/meal-plan.html">Current Plan</a></li>
-        </ul>
-      </section>
+        <section class="span-6 card" aria-labelledby="plan">
+          <h2 id="plan">Meal Plan (Subscription)</h2>
+          <ul class="clean">
+            <li><a href="/meal-plan.html">Current Plan</a></li>
+          </ul>
+        </section>
 
-      <sg-meal-list class="span-6" src="/api/meals"></sg-meal-list>
-    </main>
+        <sg-meal-list class="span-6" src="/api/meals"></sg-meal-list>
+      </main>
 
-    <footer>
-      <small>All pages should be reachable from here.</small>
-    </footer>
+      <footer>
+        <small>All pages should be reachable from here.</small>
+      </footer>
+    </mu-auth>
   </body>
 </html>

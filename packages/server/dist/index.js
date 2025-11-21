@@ -24,23 +24,19 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 var import_express = __toESM(require("express"));
 var import_path = __toESM(require("path"));
 var import_mongo = require("./services/mongo");
-var import_meal_svc = __toESM(require("./services/meal-svc"));
-const staticDir = process.env.STATIC || import_path.default.resolve(__dirname, "../../proto/public");
+var import_auth = __toESM(require("./routes/auth"));
+var import_meals = __toESM(require("./routes/meals"));
 const app = (0, import_express.default)();
 const port = process.env.PORT || 3e3;
+const staticDir = import_path.default.resolve(__dirname, "../../proto/dist");
 console.log("Serving static files from:", staticDir);
 app.use(import_express.default.static(staticDir));
+app.use(import_express.default.json());
 app.get("/hello", (_req, res) => {
   res.send("Hello from Express!");
 });
-app.get("/api/meals", async (_req, res) => {
-  try {
-    const items = await import_meal_svc.default.index();
-    res.json(items);
-  } catch (err) {
-    res.status(500).send({ error: "Database error" });
-  }
-});
+app.use("/auth", import_auth.default);
+app.use("/api/meals", import_auth.authenticateUser, import_meals.default);
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

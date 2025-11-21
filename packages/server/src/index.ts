@@ -1,35 +1,33 @@
-import express, { Request, Response } from "express";
+import express from "express";
 import path from "path";
 import { connect } from "./services/mongo";
-import Meals from "./services/meal-svc";
+import auth, { authenticateUser } from "./routes/auth";
+import meals from "./routes/meals";
 
-// Node gives __dirname in CJS output.
-// In ESBuild-generated CJS, __dirname works automatically.
-const staticDir = process.env.STATIC || path.resolve(__dirname, "../../proto/public");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+// Static files (built proto)
+const staticDir = path.resolve(__dirname, "../../proto/dist");
 console.log("Serving static files from:", staticDir);
 app.use(express.static(staticDir));
 
-// Test route
-app.get("/hello", (_req: Request, res: Response) => {
+// 🔹 JSON body parser for REST APIs
+app.use(express.json());
+
+// Simple test route from Lab 10
+app.get("/hello", (_req, res) => {
   res.send("Hello from Express!");
 });
 
-// API route
-app.get("/api/meals", async (_req: Request, res: Response) => {
-  try {
-    const items = await Meals.index();
-    res.json(items);
-  } catch (err) {
-    res.status(500).send({ error: "Database error" });
-  }
-});
+// 🔹 Mount the Meals REST API
+app.use("/auth", auth);
+app.use("/api/meals", authenticateUser, meals);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });
 
+// Connect to MongoDB Atlas
 connect("Synergeats");

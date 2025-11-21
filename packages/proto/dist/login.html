@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Synergeats — Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Same fonts + CSS as index -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="/styles/reset.css" />
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/page.css" />
+    <link rel="stylesheet" href="/styles/layout.css" />
+
+    <script type="module" crossorigin src="/assets/login-3IVd0q_u.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/state-BFvJTQ8F.js">
+  </head>
+
+  <body class="page">
+    <mu-auth>
+      <h2>User Login</h2>
+      <main class="card">
+        <login-form api="/auth/login">
+          <label>
+            <span>Username:</span>
+            <input name="username" autocomplete="off" />
+          </label>
+          <label>
+            <span>Password:</span>
+            <input type="password" name="password" />
+          </label>
+        </login-form>
+      </main>
+
+      <p>
+        Or did you want to
+        <a href="newuser.html">Sign up as a new user</a>?
+      </p>
+    </mu-auth>
+  </body>
+</html>
