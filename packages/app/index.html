@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Synergeats — SPA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Fonts (same as proto) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,400;0,700;1,400&family=Orbitron:wght@700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Base styles -->
+    <link rel="stylesheet" href="/styles/reset.css" />
+    <link rel="stylesheet" href="/styles/tokens.css" />
+    <link rel="stylesheet" href="/styles/page.css" />
+    <link rel="stylesheet" href="/styles/layout.css" />
+  </head>
+
+    <body>
+        <mu-history provides="Synergeats:history">
+            <mu-auth provides="Synergeats:auth" redirect="/login.html">
+            <mu-store provides="Synergeats:model">
+                <article class="page">
+                <sg-header></sg-header>
+                <mu-switch></mu-switch>
+                </article>
+            </mu-store>
+            </mu-auth>
+        </mu-history>
+
+        <script type="module" src="/src/main.ts"></script>
+    </body>
+</html>
