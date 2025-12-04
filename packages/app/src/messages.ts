@@ -1,12 +1,10 @@
 // packages/app/src/messages.ts
-import type { Meal } from "server/models";
+import { Message } from "@calpoly/mustang";
+import { Meal } from "server/models";
 
-/**
- * MVU messages for Synergeats SPA.
- *
- * - "meals/request": ask the store to load meals from /api/meals
- * - "meals/load": store has received meals and should put them in the model
- */
 export type Msg =
-  | ["meals/request", {}]
-  | ["meals/load", { meals: Meal[] }];
+  | ["meals/request", {}, Message.Reactions]
+  | ["meals/load", { meals: Meal[] }, Message.Reactions]
+  | ["meal/request", { id: string }, Message.Reactions]
+  | ["meal/load", { meal: Meal }, Message.Reactions]
+  | ["meal/save", { id: string; meal: Meal }, Message.Reactions];

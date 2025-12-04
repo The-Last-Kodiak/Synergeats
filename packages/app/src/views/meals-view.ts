@@ -1,95 +1,82 @@
 // packages/app/src/views/meals-view.ts
-import { View, define } from "@calpoly/mustang";
+import { define, View, Message } from "@calpoly/mustang"; // <— add Message here
 import { css, html } from "lit";
-import type { Model } from "../model";
-import type { Msg } from "../messages";
 import type { Meal } from "server/models";
-import { MealCardElement } from "../components/meal-card.ts";
+
+import { Model } from "../model";
+import { Msg } from "../messages";
+import { MealCardElement } from "../components/meal-card";
 
 export class MealsViewElement extends View<Model, Msg> {
-  // Register components used inside this view.
   static uses = define({
     "sg-meal-card": MealCardElement
   });
 
   constructor() {
-    // Matches provides="Synergeats:model" in index.html
     super("Synergeats:model");
   }
 
   connectedCallback(): void {
     super.connectedCallback();
-    // Ask the store to load meals once when the view mounts
-    this.dispatchMessage(["meals/request", {}]);
+    const reactions: Message.Reactions = {};
+    this.dispatchMessage(["meals/request", {}, reactions]);
   }
 
   render() {
-    const meals: Meal[] = this.model.meals ?? [];
+    const meals = this.model.meals ?? [];
+
+    if (!meals.length) {
+      return html`
+        <main class="page">
+          <h2>Menu Meals (from API)</h2>
+          <p>No meals loaded yet (or still loading)...</p>
+        </main>
+      `;
+    }
 
     return html`
-      <section class="card" aria-labelledby="meals-heading">
-        <h2 id="meals-heading">Menu Meals (from API)</h2>
+      <main class="page">
+        <h2>Menu Meals (from API)</h2>
+        <section class="meals-list">
+          ${meals.map((meal) => this.renderMeal(meal))}
+        </section>
+      </main>
+    `;
+  }
 
-        ${meals.length === 0
-          ? html`<p>No meals loaded yet (or still loading)…</p>`
-          : html`
-              <ul class="list">
-                ${meals.map(
-                  (m) => html`
-                    <li>
-                      <sg-meal-card
-                        img-src=${m.imgSrc ?? ""}
-                        href=${`/app/meals/${m.id}`}
-                        .calories=${m.calories}
-                        .protein=${m.protein}
-                        .carbs=${m.carbs}
-                        .fat=${m.fat}
-                      >
-                        ${m.name}
-                        ${Array.isArray(m.tags) && m.tags.length
-                          ? html`<span slot="tags">
-                              ${m.tags.join(" • ")}
-                            </span>`
-                          : null}
-                      </sg-meal-card>
-                    </li>
-                  `
-                )}
-              </ul>
-            `}
-      </section>
+  private renderMeal(meal: Meal) {
+    const id = (meal as any).id ?? (meal as any)._id;
+
+    return html`
+      <article class="meal-row">
+        <sg-meal-card .meal=${meal}></sg-meal-card>
+        ${id
+          ? html`<p class="meal-actions">
+              <a href="/app/meals/${id}/edit">Edit meal</a>
+            </p>`
+          : null}
+      </article>
     `;
   }
 
   static styles = css`
-    :host {
-      display: block;
-    }
-
-    section.card {
-      background: var(--color-surface-1);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-2xl);
-      padding: 1.25rem 1.5rem;
+    main.page {
+      padding: 2rem 3rem;
     }
 
     h2 {
-      margin: 0 0 0.75rem 0;
-      font-family: var(--font-display-stack);
+      margin-bottom: 1.5rem;
     }
 
-    ul.list {
-      list-style: none;
-      margin: 0;
-      padding: 0;
+    .meals-list {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.5rem;
     }
 
-    li {
-      margin: 0;
-      padding: 0;
+    .meal-actions {
+      margin-top: 0.5rem;
+      text-align: right;
     }
   `;
 }
