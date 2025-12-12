@@ -26,44 +26,22 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var meals_exports = {};
-__export(meals_exports, {
-  default: () => meals_default
+var meals_public_exports = {};
+__export(meals_public_exports, {
+  default: () => meals_public_default
 });
-module.exports = __toCommonJS(meals_exports);
+module.exports = __toCommonJS(meals_public_exports);
 var import_express = __toESM(require("express"));
 var import_meal_svc = __toESM(require("../services/meal-svc"));
 const router = import_express.default.Router();
 router.get("/", (_req, res) => {
-  const userid = _req.user?.username ?? _req.user?.sub;
-  import_meal_svc.default.index(userid).then((list) => res.json(list)).catch((err) => res.status(500).send(err));
+  import_meal_svc.default.indexDefault().then((list) => res.json(list)).catch((err) => res.status(500).send(err));
 });
 router.get("/:id", (req, res) => {
   const { id } = req.params;
   import_meal_svc.default.get(id).then((meal) => {
-    if (meal) res.json(meal);
+    if (meal && meal.owner === "default") res.json(meal);
     else res.status(404).send(`${id} not found`);
   }).catch((err) => res.status(500).send(err));
 });
-router.post("/", (req, res) => {
-  const newMeal = req.body;
-  const userid = req.user?.username ?? req.user?.sub;
-  if (userid) newMeal.owner = userid;
-  import_meal_svc.default.create(newMeal).then((meal) => res.status(201).json(meal)).catch((err) => res.status(500).send(err));
-});
-router.put("/:id", (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
-  import_meal_svc.default.update(id, updates).then((meal) => {
-    if (meal) res.json(meal);
-    else res.status(404).send(`${id} not updated`);
-  }).catch((err) => res.status(500).send(err));
-});
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  import_meal_svc.default.remove(id).then((meal) => {
-    if (meal) res.status(204).end();
-    else res.status(404).send(`${id} not deleted`);
-  }).catch((err) => res.status(500).send(err));
-});
-var meals_default = router;
+var meals_public_default = router;

@@ -26,44 +26,41 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var meals_exports = {};
-__export(meals_exports, {
-  default: () => meals_default
+var plan_exports = {};
+__export(plan_exports, {
+  default: () => plan_default
 });
-module.exports = __toCommonJS(meals_exports);
+module.exports = __toCommonJS(plan_exports);
 var import_express = __toESM(require("express"));
-var import_meal_svc = __toESM(require("../services/meal-svc"));
+var import_plan = require("../models/plan");
 const router = import_express.default.Router();
-router.get("/", (_req, res) => {
-  const userid = _req.user?.username ?? _req.user?.sub;
-  import_meal_svc.default.index(userid).then((list) => res.json(list)).catch((err) => res.status(500).send(err));
-});
-router.get("/:id", (req, res) => {
-  const { id } = req.params;
-  import_meal_svc.default.get(id).then((meal) => {
-    if (meal) res.json(meal);
-    else res.status(404).send(`${id} not found`);
-  }).catch((err) => res.status(500).send(err));
-});
-router.post("/", (req, res) => {
-  const newMeal = req.body;
+router.get("/", async (req, res) => {
   const userid = req.user?.username ?? req.user?.sub;
-  if (userid) newMeal.owner = userid;
-  import_meal_svc.default.create(newMeal).then((meal) => res.status(201).json(meal)).catch((err) => res.status(500).send(err));
+  if (!userid) return res.status(401).end();
+  try {
+    const plan = await import_plan.PlanModel.findOne({ userid }).lean();
+    if (!plan) {
+      return res.json({ userid, weeklyPlan: {}, myMeals: [] });
+    }
+    res.json(plan);
+  } catch (err) {
+    res.status(500).json({ error: "Server error retrieving plan" });
+  }
 });
-router.put("/:id", (req, res) => {
-  const { id } = req.params;
-  const updates = req.body;
-  import_meal_svc.default.update(id, updates).then((meal) => {
-    if (meal) res.json(meal);
-    else res.status(404).send(`${id} not updated`);
-  }).catch((err) => res.status(500).send(err));
+router.put("/", async (req, res) => {
+  const userid = req.user?.username ?? req.user?.sub;
+  if (!userid) return res.status(401).end();
+  const weeklyPlan = req.body?.weeklyPlan ?? {};
+  const myMeals = Array.isArray(req.body?.myMeals) ? req.body.myMeals : [];
+  try {
+    const plan = await import_plan.PlanModel.findOneAndUpdate(
+      { userid },
+      { userid, weeklyPlan, myMeals },
+      { new: true, upsert: true }
+    ).lean();
+    res.json(plan);
+  } catch (err) {
+    res.status(500).json({ error: "Server error saving plan" });
+  }
 });
-router.delete("/:id", (req, res) => {
-  const { id } = req.params;
-  import_meal_svc.default.remove(id).then((meal) => {
-    if (meal) res.status(204).end();
-    else res.status(404).send(`${id} not deleted`);
-  }).catch((err) => res.status(500).send(err));
-});
-var meals_default = router;
+var plan_default = router;

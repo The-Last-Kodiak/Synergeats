@@ -13,6 +13,11 @@ export class MealCardElement extends LitElement {
 
     return html`
       <article class="card">
+        ${meal.imgSrc
+          ? html`<div class="thumb">
+              <img src=${meal.imgSrc} alt=${meal.name} />
+            </div>`
+          : null}
         <header>
           <h3>${meal.name}</h3>
           ${meal.tags?.length
@@ -40,6 +45,10 @@ export class MealCardElement extends LitElement {
             <dd>${meal.fat} g</dd>
           </div>
         </dl>
+
+        ${meal.ingredients
+          ? html`<p class="ingredients">${meal.ingredients}</p>`
+          : null}
       </article>
     `;
   }
@@ -54,9 +63,10 @@ export class MealCardElement extends LitElement {
       border-radius: 1rem;
       background: rgba(0, 0, 0, 0.2);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      display: flex;
-      flex-direction: column;
+      display: grid;
       gap: 0.75rem;
+      grid-template-columns: 1fr;
+      min-height: 100%;
     }
 
     h3 {
@@ -71,8 +81,9 @@ export class MealCardElement extends LitElement {
     }
 
     .macros {
-      display: flex;
-      gap: 2.5rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
       margin: 0;
     }
 
@@ -91,6 +102,20 @@ export class MealCardElement extends LitElement {
     dd {
       margin: 0;
       font-weight: 600;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 160px;
+      object-fit: cover;
+      border-radius: 0.8rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .ingredients {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--color-muted, #9ea6c0);
     }
   `;
 }

@@ -9,7 +9,8 @@ const router = express.Router();
  * Get the whole collection
  */
 router.get("/", (_req: Request, res: Response) => {
-  Meals.index()
+  const userid = (_req as any).user?.username ?? (_req as any).user?.sub;
+  Meals.index(userid)
     .then((list: Meal[]) => res.json(list))
     .catch((err) => res.status(500).send(err));
 });
@@ -36,6 +37,8 @@ router.get("/:id", (req: Request, res: Response) => {
  */
 router.post("/", (req: Request, res: Response) => {
   const newMeal = req.body as Meal;
+  const userid = (req as any).user?.username ?? (req as any).user?.sub;
+  if (userid) newMeal.owner = userid;
 
   Meals.create(newMeal)
     .then((meal: Meal) => res.status(201).json(meal))

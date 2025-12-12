@@ -1,0 +1,56 @@
+:root{
+  --container-max: 1200px;
+  --bp-lg: 1200px;
+  --bp-md: 900px;
+  --bp-sm: 640px;
+}
+
+/* Header layout (flex) */
+header.app-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-2);
+}
+header.app-header nav { flex: 1; }
+header.app-header h1 { margin: 0 auto; text-align: center; }
+header.app-header .user { margin-left: auto; }
+
+/* Page grid */
+/* desktop / large */
+main.page-grid {
+  width: min(100%, var(--container-max));
+  margin: 2rem auto;
+  padding-inline: 1rem;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr)); /* '12',8,6,4 */
+  gap: var(--space-2);
+}
+
+.span-12 { grid-column: span 12; }
+.span-6  { grid-column: span 6; }
+.span-4  { grid-column: span 4; }
+.span-3  { grid-column: span 3; }
+/* medium screens (<=900px) use 8 columns */
+@media (max-width: 900px) {
+  main.page-grid { grid-template-columns: repeat(8, minmax(0,1fr)); } /* 12,'8',6,4 */
+  .span-6 { grid-column: span 8; }  
+  .span-4 { grid-column: span 4; }
+  .span-3 { grid-column: span 4; } 
+}
+/* small screens (<=640px) use 4 columns */
+@media (max-width: 640px) { 
+  main.page-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } /* 12,8,6,'4' */
+  .span-6, .span-4, .span-3 { grid-column: span 4; }
+}
+
+ul.clean {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+
+/*A section with class="span-6" takes 6 of 12 columns (half width); 
+span-4 takes a third; span-3 takes a quarter.*/

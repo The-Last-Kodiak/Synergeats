@@ -31,13 +31,21 @@ const MealSchema = new import_mongoose.Schema(
     carbs: Number,
     fat: Number,
     tags: [String],
-    imgSrc: String
+    imgSrc: String,
+    ingredients: String,
+    owner: { type: String, default: "default" }
   },
   { collection: "Synergeats_meals" }
 );
 const MealModel = (0, import_mongoose.model)("Meal", MealSchema);
-function index() {
-  return MealModel.find();
+function index(userid) {
+  if (!userid) return MealModel.find({ owner: "default" });
+  return MealModel.find({
+    $or: [{ owner: "default" }, { owner: userid }]
+  });
+}
+function indexDefault() {
+  return MealModel.find({ owner: "default" });
 }
 function get(id) {
   return MealModel.findOne({ id });
@@ -51,4 +59,4 @@ function update(id, updates) {
 function remove(id) {
   return MealModel.findOneAndDelete({ id });
 }
-var meal_svc_default = { index, get, create, update, remove };
+var meal_svc_default = { index, indexDefault, get, create, update, remove };

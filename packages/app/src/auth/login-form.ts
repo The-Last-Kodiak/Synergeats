@@ -6,6 +6,7 @@ import headings from "../styles/headings.css.js";
 interface LoginFormData {
   username?: string;
   password?: string;
+  passwordConfirm?: string;
 }
 
 export class LoginFormElement extends LitElement {
@@ -25,8 +26,15 @@ export class LoginFormElement extends LitElement {
     return Boolean(
       this.api &&
       this.formData.username &&
-      this.formData.password
+      this.formData.password &&
+      (this.isRegister
+        ? this.formData.password === this.formData.passwordConfirm
+        : true)
     );
+  }
+
+  private get isRegister(): boolean {
+    return (this.api ?? "").includes("/register");
   }
 
   override render() {
@@ -111,6 +119,9 @@ export class LoginFormElement extends LitElement {
       case "password":
         this.formData = { ...prevData, password: value };
         break;
+      case "passwordConfirm":
+        this.formData = { ...prevData, passwordConfirm: value };
+        break;
     }
   }
 
@@ -123,11 +134,22 @@ export class LoginFormElement extends LitElement {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(this.formData)
+        body: JSON.stringify({
+          username: this.formData.username,
+          password: this.formData.password
+        })
       })
         .then((res) => {
-          if (res.status !== 200) throw "Login failed";
-          return res.json();
+          if (res.status === 201 || res.status === 200) return res.json();
+          return res
+            .json()
+            .catch(() => ({}))
+            .then((body) => {
+              const msg =
+                (body as any)?.error ??
+                `Request failed (${res.status})`;
+              throw msg;
+            });
         })
         .then((json: object) => {
           const { token } = json as { token: string };

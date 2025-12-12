@@ -26,9 +26,17 @@ var import_path = __toESM(require("path"));
 var import_mongo = require("./services/mongo");
 var import_auth = __toESM(require("./routes/auth"));
 var import_meals = __toESM(require("./routes/meals"));
+var import_meals_public = __toESM(require("./routes/meals-public"));
+var import_profile = __toESM(require("./routes/profile"));
+var import_plan = __toESM(require("./routes/plan"));
+var import_history = __toESM(require("./routes/history"));
 const app = (0, import_express.default)();
 const port = process.env.PORT || 3e3;
-const staticDir = import_path.default.resolve(__dirname, "../../proto/dist");
+const staticDir = import_path.default.resolve(
+  __dirname,
+  "..",
+  process.env.STATIC ?? "../proto/dist"
+);
 console.log("Serving static files from:", staticDir);
 app.use(import_express.default.static(staticDir));
 app.use(import_express.default.json());
@@ -36,7 +44,14 @@ app.get("/hello", (_req, res) => {
   res.send("Hello from Express!");
 });
 app.use("/auth", import_auth.default);
+app.use("/api/public/meals", import_meals_public.default);
 app.use("/api/meals", import_auth.authenticateUser, import_meals.default);
+app.use("/api/profile", import_auth.authenticateUser, import_profile.default);
+app.use("/api/plan", import_auth.authenticateUser, import_plan.default);
+app.use("/api/history", import_auth.authenticateUser, import_history.default);
+app.get(["/app", "/app/*"], (_req, res) => {
+  res.sendFile(import_path.default.join(staticDir, "index.html"));
+});
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);
 });

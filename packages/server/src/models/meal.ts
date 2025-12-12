@@ -7,4 +7,6 @@ export interface Meal {
   fat: number;
   tags: string[];
   imgSrc?: string;
+  ingredients?: string;
+  owner?: string;
 }

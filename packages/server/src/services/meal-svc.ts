@@ -10,15 +10,24 @@ const MealSchema = new Schema<Meal>(
     carbs: Number,
     fat: Number,
     tags: [String],
-    imgSrc: String
+    imgSrc: String,
+    ingredients: String,
+    owner: { type: String, default: "default" }
   },
   { collection: "Synergeats_meals" }
 );
 
 const MealModel = model<Meal>("Meal", MealSchema);
 
-function index(): Promise<Meal[]> {
-  return MealModel.find();
+function index(userid?: string): Promise<Meal[]> {
+  if (!userid) return MealModel.find({ owner: "default" });
+  return MealModel.find({
+    $or: [{ owner: "default" }, { owner: userid }]
+  });
+}
+
+function indexDefault(): Promise<Meal[]> {
+  return MealModel.find({ owner: "default" });
 }
 
 function get(id: string): Promise<Meal | null> {
@@ -37,4 +46,4 @@ function remove(id: string): Promise<Meal | null> {
   return MealModel.findOneAndDelete({ id });
 }
 
-export default { index, get, create, update, remove };
+export default { index, indexDefault, get, create, update, remove };
