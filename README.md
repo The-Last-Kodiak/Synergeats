@@ -144,79 +144,6 @@ From the repo root:
 
 ---
 
-## Deploying to csse.dev (production)
-
-These are the steps used to deploy to the course VPS. They assume your host is `<name>-host.csse.dev` and your HTTPS endpoint is `https://<name>.csse.dev/`.
-
-1. **SSH into your VPS**
-   ```bash
-   ssh <name>@<name>-host.csse.dev
-   # Once only:
-   passwd            # set your password
-   ```
-
-2. **Install Node 20 (first time only)**
-   ```bash
-   sudo apt update
-   curl -sL https://deb.nodesource.com/setup_20.x -o /tmp/nodesource_setup.sh
-   sudo bash /tmp/nodesource_setup.sh
-   sudo apt-get install -y nodejs
-   node -v           # should be 20.x
-   ```
-
-3. **Clone the repo (or pull latest)**
-   ```bash
-   cd ~
-   git clone https://github.com/The-Last-Kodiak/Synergeats.git
-   cd Synergeats
-   npm install
-   ```
-
-4. **Create `.env` on the VPS**  
-   In `packages/server/.env` (not committed to git), add:
-   ```bash
-   MONGO_USER=synergeats_db_user
-   MONGO_PWD=...            # your password
-   MONGO_CLUSTER=cluster0...mongodb.net
-   TOKEN_SECRET=some-long-random-string
-   ```
-   These values must match the MongoDB Atlas user and cluster you set up during the labs.
-
-5. **Build app + server**
-   ```bash
-   npm run build -w app
-   npm run build -w server
-   ```
-
-6. **Start the server pointing at the SPA build**
-   ```bash
-   cd packages/server
-   npm run start:app        # internally: STATIC=../app/dist node dist/index.js
-   ```
-   To keep it running after logout:
-   ```bash
-   nohup npm run start:app > server.log 2>&1 &
-   ```
-
-7. **Verify**
-   - In a browser, open:
-     - `https://<name>.csse.dev/` or `https://<name>.csse.dev/app`
-   - If you see **502 Bad Gateway**, the Node process is not running:
-     - SSH back in and restart with `nohup npm run start:app > server.log 2>&1 &`.
-
-8. **Updating the deployed app**
-   ```bash
-   cd ~/Synergeats
-   git pull
-   npm run build -w app
-   npm run build -w server
-   nohup npm run start:app > server.log 2>&1 &
-   ```
-
-No secrets (Mongo credentials, JWT secret) are committed to GitHub. Only the `.env` file on the VPS contains them.
-
----
-
 ## How this meets CSC 437 learning outcomes
 
 1. **Client‑rendered web app with few dependencies**
@@ -255,7 +182,6 @@ No secrets (Mongo credentials, JWT secret) are committed to GitHub. Only the `.e
   cd ~/Synergeats
   npm run build -w app
   npm run build -w server
-  cd packages/server
-  nohup npm run start:app > server.log 2>&1 &
+  npm run start:app -w server
   ```
 
