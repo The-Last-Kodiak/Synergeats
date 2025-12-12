@@ -144,35 +144,6 @@ From the repo root:
 
 ---
 
-## How this meets CSC 437 learning outcomes
-
-1. **Client‑rendered web app with few dependencies**
-   - All HTML is rendered on the client using Lit components and the Mustang MVU model.
-   - The server provides JSON via REST endpoints; no server‑side templating.
-   - Runtime dependencies are limited to Lit + @calpoly/mustang on the client and Express + Mongoose on the server.
-
-2. **Separation of HTML, CSS, and TypeScript**
-   - Views/components are built as HTML‑first templates styled with CSS custom properties, flexbox, and grid.
-   - Behavior is added via TypeScript in Lit elements (e.g., form handling, message dispatch, routing).
-   - Styling is encapsulated per component; layout tokens are reused across views to keep the design consistent.
-
-3. **Understanding framework trade‑offs (MVU and SPA routing)**
-   - The client uses @calpoly/mustang’s MVU pattern: a central `model`, an `update` function handling messages, and views reacting to state.
-   - Routing is handled client‑side (e.g., `/app`, `/app/plan`, `/app/meals`, `/app/profile`, `/app/login`), switching views without full page reloads—classic SPA behavior.
-   - The code demonstrates how a light framework (Mustang + Lit) can organize state and routing without pulling in a large ecosystem.
-
-4. **Fluency with a framework (Lit + Mustang) and portability**
-   - The app defines multiple Lit components (views and reusable cards) and wires them with Mustang’s store, auth, and history.
-   - Concepts like render methods, reactive properties, message dispatch, effects, and auth stores map directly to similar features in larger frameworks (React, Vue, etc.), making it easier to ramp up on others.
-
-5. **Client/server separation and security**
-   - The backend exposes REST APIs for auth, meals, profile, plan, and history; the frontend calls them with `fetch` and JWT headers.
-   - MongoDB Atlas stores user data; credentials and secrets are only present in `.env` on the VPS.
-   - The app is deployed to `https://<name>.csse.dev`, behind a reverse proxy that terminates HTTPS, so users access it over an encrypted connection.
-   - Unauthenticated users only see public endpoints (`/api/public/meals`); all profile/meal plan changes require a valid JWT.
-
----
-
 ## Notes for the grader
 
 - **Deployed URL:** `https://<name>.csse.dev/app` (replace `<name>` with my csse.dev username).  
