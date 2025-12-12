@@ -1,4 +1,4 @@
-# Synergeats – Personalized Nutrition & Meal Planning SPA
+# Synergeats   -   Personalized Nutrition & Meal Planning SPA
 
 Synergeats is a single‑page web app that guides users from basic nutrition onboarding to a weekly meal schedule.  
 It estimates calories/macros from user inputs, lets users store their profile and plan in MongoDB, and supports creating and managing custom meals.
@@ -138,8 +138,8 @@ From the repo root:
 
 5. Environment variables for local dev:
    - `.env` (not committed) for the server:
-     - `MONGO_USER`, `MONGO_PWD`, `MONGO_CLUSTER` → Atlas connection.
-     - `TOKEN_SECRET` → JWT signing secret.
+      `MONGO_USER`, `MONGO_PWD`, `MONGO_CLUSTER` → Atlas connection.
+      `TOKEN_SECRET` → JWT signing secret.
    - If these are not set, the server falls back to localhost Mongo and a non‑secret token key, which is fine for local testing only.
 
 ---
