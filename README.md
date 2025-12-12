@@ -11,7 +11,7 @@ The project is structured as a monorepo:
 
 ---
 
-## What the app does (user experience)
+## What the app does
 
 **Logged‑out**
 
@@ -102,7 +102,7 @@ The project is structured as a monorepo:
 
 ---
 
-## Running locally (dev)
+## Running locally
 
 From the repo root:
 
