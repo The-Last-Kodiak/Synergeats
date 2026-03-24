@@ -32,31 +32,37 @@ export default function MealPlanner() {
   }, [mealPlans]);
 
   async function createPlan() {
-    if (!user || mealPlans.length >= 7) return;
+    if (!user || mealPlans.length >= 7 || saving) return;
     setSaving(true);
-    const { data } = await supabase
-      .from('meal_plans')
-      .insert({ user_id: user.id, name: `Plan ${mealPlans.length + 1}` })
-      .select()
-      .single();
-    await refreshMealPlans();
-    if (data) setSelectedPlan(data);
-    setSaving(false);
+    try {
+      const { data, error } = await supabase
+        .from('meal_plans')
+        .insert({ user_id: user.id, name: `Plan ${mealPlans.length + 1}` })
+        .select()
+        .single();
+      if (error) throw error;
+      await refreshMealPlans();
+      if (data) setSelectedPlan(data);
+    } finally {
+      setSaving(false);
+    }
   }
 
-  async function deletePlan(id: string) {
+  async function deletePlan(e: React.MouseEvent, id: string) {
+    e.stopPropagation();
     await supabase.from('meal_plans').delete().eq('id', id);
     await refreshMealPlans();
     if (selectedPlan?.id === id) setSelectedPlan(null);
   }
 
   async function updatePlanName(plan: MealPlan, name: string) {
+    if (!name.trim() || name === plan.name) return;
     await supabase.from('meal_plans').update({ name, updated_at: new Date().toISOString() }).eq('id', plan.id);
     await refreshMealPlans();
   }
 
   async function toggleDay(plan: MealPlan, dayKey: string) {
-    const val = !(plan as any)[dayKey];
+    const val = !(plan as unknown as Record<string, unknown>)[dayKey];
     await supabase.from('meal_plans').update({ [dayKey]: val }).eq('id', plan.id);
     await refreshMealPlans();
   }
@@ -64,7 +70,7 @@ export default function MealPlanner() {
   async function searchFoods(q: string) {
     setFoodSearch(q);
     if (!q.trim()) { setSearchResults([]); return; }
-    const { data } = await supabase.from('foods').select('*').ilike('name', `%${q}%`).limit(10);
+    const { data } = await supabase.from('foods').select('*').ilike('name', `%${q}%`).limit(12);
     setSearchResults(data || []);
   }
 
@@ -88,7 +94,8 @@ export default function MealPlanner() {
     await refreshMealPlans();
   }
 
-  async function removeItem(itemId: string) {
+  async function removeItem(e: React.MouseEvent, itemId: string) {
+    e.stopPropagation();
     await supabase.from('meal_plan_items').delete().eq('id', itemId);
     await refreshMealPlans();
   }
@@ -98,36 +105,43 @@ export default function MealPlanner() {
     await refreshMealPlans();
   }
 
+  function openPlan(plan: MealPlan) {
+    setSelectedPlan(plan);
+    setEditingName(plan.name);
+    setShowFoodSearch(false);
+    setFoodSearch('');
+    setSearchResults([]);
+  }
+
   if (selectedPlan) {
     const items = selectedPlan.items || [];
-    const breakfastItems = items.filter(i => i.meal_time === 'breakfast');
-    const lunchItems = items.filter(i => i.meal_time === 'lunch');
-    const dinnerItems = items.filter(i => i.meal_time === 'dinner');
-    const anyItems = items.filter(i => i.meal_time === 'any');
+    const sections = [
+      { key: 'breakfast', label: 'Breakfast', icon: <Sunrise size={15} />, items: items.filter(i => i.meal_time === 'breakfast') },
+      { key: 'lunch', label: 'Lunch', icon: <Sun size={15} />, items: items.filter(i => i.meal_time === 'lunch') },
+      { key: 'dinner', label: 'Dinner', icon: <Moon size={15} />, items: items.filter(i => i.meal_time === 'dinner') },
+      { key: 'any', label: 'Any Time', icon: null, items: items.filter(i => i.meal_time === 'any') },
+    ];
 
     return (
       <div className="meal-planner">
         <div className="meal-planner__plan-header">
-          <button className="back-btn" onClick={() => setSelectedPlan(null)}>
+          <button type="button" className="back-btn" onClick={() => setSelectedPlan(null)}>
             <ArrowLeft size={18} /> Plans
           </button>
 
-          <div className="plan-name-edit">
-            <input
-              value={editingName || selectedPlan.name}
-              onChange={e => setEditingName(e.target.value)}
-              onBlur={() => {
-                if (editingName && editingName !== selectedPlan.name) updatePlanName(selectedPlan, editingName);
-              }}
-              className="plan-name-input"
-            />
-          </div>
+          <input
+            value={editingName}
+            onChange={e => setEditingName(e.target.value)}
+            onBlur={() => updatePlanName(selectedPlan, editingName)}
+            className="plan-name-input"
+          />
 
           <div className="plan-days">
             {DAYS.map(d => (
               <button
+                type="button"
                 key={d.key}
-                className={`day-toggle ${(selectedPlan as any)[d.key] ? 'day-toggle--active' : ''}`}
+                className={`day-toggle${(selectedPlan as unknown as Record<string, unknown>)[d.key] ? ' day-toggle--active' : ''}`}
                 onClick={() => toggleDay(selectedPlan, d.key)}
               >
                 {d.label}
@@ -137,12 +151,7 @@ export default function MealPlanner() {
         </div>
 
         <div className="meal-planner__plan-body">
-          {[
-            { key: 'breakfast', label: 'Breakfast', icon: <Sunrise size={16} />, items: breakfastItems },
-            { key: 'lunch', label: 'Lunch', icon: <Sun size={16} />, items: lunchItems },
-            { key: 'dinner', label: 'Dinner', icon: <Moon size={16} />, items: dinnerItems },
-            { key: 'any', label: 'Any Time', icon: null, items: anyItems },
-          ].map(section => (
+          {sections.map(section => (
             <div key={section.key} className="plan-section">
               <div className="plan-section__header">
                 {section.icon}
@@ -159,33 +168,40 @@ export default function MealPlanner() {
                     <span className="plan-item__cal">{Math.round((item.food?.calories || 0) * item.quantity)} cal</span>
                   </div>
                   <div className="plan-item__controls">
-                    <button className="qty-btn" onClick={() => updateItemQuantity(item, -1)}>-</button>
+                    <button type="button" className="qty-btn" onClick={() => updateItemQuantity(item, -1)}>-</button>
                     <span className="qty-val">{item.quantity}</span>
-                    <button className="qty-btn" onClick={() => updateItemQuantity(item, 1)}>+</button>
+                    <button type="button" className="qty-btn" onClick={() => updateItemQuantity(item, 1)}>+</button>
                     <div className="meal-time-icons">
                       <button
-                        className={`mt-icon-btn ${item.meal_time === 'breakfast' ? 'mt-icon-btn--active' : ''}`}
+                        type="button"
+                        className={`mt-icon-btn${item.meal_time === 'breakfast' ? ' mt-icon-btn--active' : ''}`}
                         onClick={() => setItemMealTime(item, 'breakfast')}
                         title="Breakfast"
                       >
-                        <Sunrise size={14} />
+                        <Sunrise size={13} />
                       </button>
                       <button
-                        className={`mt-icon-btn ${item.meal_time === 'lunch' ? 'mt-icon-btn--active' : ''}`}
+                        type="button"
+                        className={`mt-icon-btn${item.meal_time === 'lunch' ? ' mt-icon-btn--active' : ''}`}
                         onClick={() => setItemMealTime(item, 'lunch')}
                         title="Lunch"
                       >
-                        <Sun size={14} />
+                        <Sun size={13} />
                       </button>
                       <button
-                        className={`mt-icon-btn ${item.meal_time === 'dinner' ? 'mt-icon-btn--active' : ''}`}
+                        type="button"
+                        className={`mt-icon-btn${item.meal_time === 'dinner' ? ' mt-icon-btn--active' : ''}`}
                         onClick={() => setItemMealTime(item, 'dinner')}
                         title="Dinner"
                       >
-                        <Moon size={14} />
+                        <Moon size={13} />
                       </button>
                     </div>
-                    <button className="plan-item__delete" onClick={() => removeItem(item.id)}>
+                    <button
+                      type="button"
+                      className="plan-item__delete"
+                      onClick={e => removeItem(e, item.id)}
+                    >
                       <Trash2 size={14} />
                     </button>
                   </div>
@@ -215,13 +231,21 @@ export default function MealPlanner() {
                   <option value="lunch">Lunch</option>
                   <option value="dinner">Dinner</option>
                 </select>
-                <button onClick={() => { setShowFoodSearch(false); setFoodSearch(''); setSearchResults([]); }}>
+                <button
+                  type="button"
+                  onClick={() => { setShowFoodSearch(false); setFoodSearch(''); setSearchResults([]); }}
+                >
                   Cancel
                 </button>
               </div>
               <div className="food-search-results">
                 {searchResults.map(f => (
-                  <button key={f.id} className="food-search-result" onClick={() => addItemToPlan(f)}>
+                  <button
+                    type="button"
+                    key={f.id}
+                    className="food-search-result"
+                    onClick={() => addItemToPlan(f)}
+                  >
                     <span className="food-search-result__name">{f.name}</span>
                     <span className="food-search-result__cal">{f.calories} cal</span>
                   </button>
@@ -232,7 +256,7 @@ export default function MealPlanner() {
               </div>
             </div>
           ) : (
-            <button className="add-item-btn" onClick={() => setShowFoodSearch(true)}>
+            <button type="button" className="add-item-btn" onClick={() => setShowFoodSearch(true)}>
               <Plus size={16} /> Add Food Item
             </button>
           )}
@@ -251,13 +275,17 @@ export default function MealPlanner() {
       <div className="meal-planner__plans-grid">
         {mealPlans.map(plan => (
           <div key={plan.id} className="plan-card">
-            <button className="plan-card__body" onClick={() => { setSelectedPlan(plan); setEditingName(plan.name); }}>
+            <button
+              type="button"
+              className="plan-card__body"
+              onClick={() => openPlan(plan)}
+            >
               <h3>{plan.name}</h3>
               <div className="plan-card__days">
                 {DAYS.map(d => (
                   <span
                     key={d.key}
-                    className={`plan-card__day ${(plan as any)[d.key] ? 'plan-card__day--active' : ''}`}
+                    className={`plan-card__day${(plan as unknown as Record<string, unknown>)[d.key] ? ' plan-card__day--active' : ''}`}
                   >
                     {d.label}
                   </span>
@@ -266,23 +294,33 @@ export default function MealPlanner() {
               <p className="plan-card__count">{(plan.items || []).length} items</p>
               <ChevronRight size={16} className="plan-card__arrow" />
             </button>
-            <button className="plan-card__delete" onClick={() => deletePlan(plan.id)}>
+            <button
+              type="button"
+              className="plan-card__delete"
+              onClick={e => deletePlan(e, plan.id)}
+              title="Delete plan"
+            >
               <Trash2 size={14} />
             </button>
           </div>
         ))}
 
         {mealPlans.length < 7 && (
-          <button className="plan-card plan-card--new" onClick={createPlan} disabled={saving}>
+          <button
+            type="button"
+            className="plan-card plan-card--new"
+            onClick={createPlan}
+            disabled={saving || !user}
+          >
             <Plus size={24} />
-            <span>{saving ? 'Creating...' : 'New Plan'}</span>
+            <span>{saving ? 'Creating...' : !user ? 'Sign in to create' : 'New Plan'}</span>
           </button>
         )}
       </div>
 
       {mealPlans.length === 0 && !saving && (
         <div className="meal-planner__empty">
-          <p>No meal plans yet. Create your first plan to get started!</p>
+          <p>{user ? 'No meal plans yet. Create your first plan to get started!' : 'Sign in to create and save meal plans.'}</p>
         </div>
       )}
     </div>

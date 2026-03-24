@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { supabase } from '../lib/supabase';
+import { useApp } from '../context/AppContext';
 import { Leaf } from 'lucide-react';
 
 export default function AuthPage() {
+  const { setGuestMode } = useApp();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -79,6 +81,11 @@ export default function AuthPage() {
             {loading ? 'Loading...' : mode === 'signin' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
+
+        <div className="auth-skip">
+          <span>Just browsing? </span>
+          <button onClick={() => setGuestMode(true)}>Continue as Guest</button>
+        </div>
       </div>
     </div>
   );

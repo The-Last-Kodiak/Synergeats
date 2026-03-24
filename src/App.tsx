@@ -9,7 +9,7 @@ import NutritionTracker from './pages/NutritionTracker';
 import './styles/main.css';
 
 function AppShell() {
-  const { user, loading } = useApp();
+  const { user, loading, guestMode } = useApp();
 
   if (loading) {
     return (
@@ -19,7 +19,7 @@ function AppShell() {
     );
   }
 
-  if (!user) return <AuthPage />;
+  if (!user && !guestMode) return <AuthPage />;
 
   return (
     <div className="app-layout">

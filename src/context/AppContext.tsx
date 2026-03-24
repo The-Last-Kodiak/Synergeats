@@ -9,6 +9,8 @@ interface AppContextType {
   todayLogs: DailyLog[];
   mealPlans: MealPlan[];
   loading: boolean;
+  guestMode: boolean;
+  setGuestMode: (v: boolean) => void;
   refreshProfile: () => Promise<void>;
   refreshTodayLogs: () => Promise<void>;
   refreshMealPlans: () => Promise<void>;
@@ -23,6 +25,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [todayLogs, setTodayLogs] = useState<DailyLog[]>([]);
   const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
   const [loading, setLoading] = useState(true);
+  const [guestMode, setGuestMode] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -30,9 +33,16 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
-    supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      if (!session?.user) {
+        setProfile(null);
+        setTodayLogs([]);
+        setMealPlans([]);
+      }
     });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -40,10 +50,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       refreshProfile();
       refreshTodayLogs();
       refreshMealPlans();
-    } else {
-      setProfile(null);
-      setTodayLogs([]);
-      setMealPlans([]);
     }
   }, [user]);
 
@@ -85,6 +91,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       todayLogs,
       mealPlans,
       loading,
+      guestMode,
+      setGuestMode,
       refreshProfile,
       refreshTodayLogs,
       refreshMealPlans,
