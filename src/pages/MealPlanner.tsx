@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '../lib/supabase';
 import { useApp } from '../context/AppContext';
 import { type MealPlan, type MealPlanItem, type Food } from '../types';
-import { Plus, Trash2, ChevronRight, ArrowLeft, Sunrise, Sun, Moon } from 'lucide-react';
+import { Plus, Trash2, ChevronRight, ArrowLeft, Sunrise, Sun, Moon, CalendarCheck } from 'lucide-react';
 
 const DAYS = [
   { key: 'days_monday', label: 'M' },
@@ -265,15 +265,41 @@ export default function MealPlanner() {
     );
   }
 
+  const todayPlan = mealPlans.find(p => p.is_today_plan);
+  const regularPlans = mealPlans.filter(p => !p.is_today_plan);
+
   return (
     <div className="meal-planner">
       <div className="meal-planner__header">
         <h1>Meal Planner</h1>
-        <p>Create up to 7 weekly meal plans</p>
+        <p>Create up to 3 weekly meal plans</p>
       </div>
 
       <div className="meal-planner__plans-grid">
-        {mealPlans.map(plan => (
+        {todayPlan && (
+          <div key={todayPlan.id} className="plan-card plan-card--today">
+            <button
+              type="button"
+              className="plan-card__body"
+              onClick={() => openPlan(todayPlan)}
+            >
+              <div className="plan-card__today-badge"><CalendarCheck size={11} /> Today</div>
+              <h3>{todayPlan.name}</h3>
+              <p className="plan-card__count">{(todayPlan.items || []).length} items</p>
+              <ChevronRight size={16} className="plan-card__arrow" />
+            </button>
+            <button
+              type="button"
+              className="plan-card__delete"
+              onClick={e => deletePlan(e, todayPlan.id)}
+              title="Delete plan"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
+        )}
+
+        {regularPlans.map(plan => (
           <div key={plan.id} className="plan-card">
             <button
               type="button"
@@ -305,7 +331,7 @@ export default function MealPlanner() {
           </div>
         ))}
 
-        {mealPlans.length < 7 && (
+        {regularPlans.length < 3 && (
           <button
             type="button"
             className="plan-card plan-card--new"
@@ -320,7 +346,7 @@ export default function MealPlanner() {
 
       {mealPlans.length === 0 && !saving && (
         <div className="meal-planner__empty">
-          <p>{user ? 'No meal plans yet. Create your first plan to get started!' : 'Sign in to create and save meal plans.'}</p>
+          <p>{user ? 'No meal plans yet. Add foods via Food Browser, or create a plan!' : 'Sign in to create and save meal plans.'}</p>
         </div>
       )}
     </div>

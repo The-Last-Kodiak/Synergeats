@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import FoodBrowser from './pages/FoodBrowser';
 import MealPlanner from './pages/MealPlanner';
 import NutritionTracker from './pages/NutritionTracker';
+import TodaysPlan from './pages/TodaysPlan';
 import './styles/main.css';
 
 function AppShell() {
@@ -28,6 +29,7 @@ function AppShell() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/food" element={<FoodBrowser />} />
+          <Route path="/today" element={<TodaysPlan />} />
           <Route path="/planner" element={<MealPlanner />} />
           <Route path="/tracker" element={<NutritionTracker />} />
           <Route path="*" element={<Navigate to="/" />} />

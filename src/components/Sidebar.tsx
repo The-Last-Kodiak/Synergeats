@@ -1,21 +1,31 @@
 import { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Search, CalendarDays, ChartBar as BarChart3, LogOut, LogIn, Leaf } from 'lucide-react';
+import { LayoutDashboard, Search, CalendarDays, ChartBar as BarChart3, LogOut, LogIn, Leaf, CalendarCheck, Sun, Moon } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useApp } from '../context/AppContext';
 
 const NAV_ITEMS = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard', color: '#3dba7e' },
   { to: '/food', icon: Search, label: 'Food Browser', color: '#f47c3c' },
-  { to: '/planner', icon: CalendarDays, label: 'Meal Planner', color: '#f5c842' },
-  { to: '/tracker', icon: BarChart3, label: 'Nutrition', color: '#4da3e8' },
+  { to: '/today', icon: CalendarCheck, label: "Today's Plan", color: '#f5c842' },
+  { to: '/planner', icon: CalendarDays, label: 'Meal Planner', color: '#4da3e8' },
+  { to: '/tracker', icon: BarChart3, label: 'Nutrition', color: '#f472b6' },
 ];
 
 export default function Sidebar() {
   const { user, guestMode, setGuestMode } = useApp();
   const [expanded, setExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isDark, setIsDark] = useState(true);
   const sidebarRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      setIsDark(false);
+      document.documentElement.classList.add('light');
+    }
+  }, []);
 
   useEffect(() => {
     function checkMobile() {
@@ -47,6 +57,18 @@ export default function Sidebar() {
 
   function handleClick() {
     if (isMobile) setExpanded(v => !v);
+  }
+
+  function toggleTheme() {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.remove('light');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      document.documentElement.classList.add('light');
+      localStorage.setItem('theme', 'light');
+    }
   }
 
   async function handleSignOut() {
@@ -88,17 +110,29 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {user ? (
-        <button className="sidebar__signout" onClick={handleSignOut} title="Sign out">
-          <LogOut size={20} />
-          {expanded && <span>Sign Out</span>}
+      <div className="sidebar__bottom">
+        <button
+          type="button"
+          className="sidebar__theme-btn"
+          onClick={e => { e.stopPropagation(); toggleTheme(); }}
+          title={isDark ? 'Light Mode' : 'Dark Mode'}
+        >
+          {isDark ? <Sun size={18} /> : <Moon size={18} />}
+          {expanded && <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
         </button>
-      ) : guestMode ? (
-        <button className="sidebar__guest-btn" onClick={handleSignIn} title="Sign in">
-          <LogIn size={20} />
-          {expanded && <span>Sign In</span>}
-        </button>
-      ) : null}
+
+        {user ? (
+          <button type="button" className="sidebar__signout" onClick={handleSignOut} title="Sign out">
+            <LogOut size={20} />
+            {expanded && <span>Sign Out</span>}
+          </button>
+        ) : guestMode ? (
+          <button type="button" className="sidebar__guest-btn" onClick={handleSignIn} title="Sign in">
+            <LogIn size={20} />
+            {expanded && <span>Sign In</span>}
+          </button>
+        ) : null}
+      </div>
     </aside>
   );
 }

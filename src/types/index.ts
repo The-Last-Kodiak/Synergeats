@@ -7,6 +7,7 @@ export interface UserProfile {
   age: number;
   has_diabetes: boolean;
   allergies: string[];
+  diet_type: string;
   special_notes: string;
   onboarding_complete: boolean;
   created_at: string;
@@ -50,6 +51,8 @@ export interface MealPlan {
   id: string;
   user_id: string;
   name: string;
+  is_today_plan: boolean;
+  today_plan_date: string | null;
   days_monday: boolean;
   days_tuesday: boolean;
   days_wednesday: boolean;
@@ -80,6 +83,7 @@ export interface DailyLog {
   quantity: number;
   meal_time: 'breakfast' | 'lunch' | 'dinner' | 'any';
   created_at: string;
+  updated_at?: string;
   food?: Food;
 }
 
@@ -105,4 +109,10 @@ export interface DailyTargets {
   magnesium_mg: number;
   antioxidant_score: number;
   omega3_mg: number;
+}
+
+export interface CartItem {
+  food: Food;
+  quantity: number;
+  meal_time: 'breakfast' | 'lunch' | 'dinner' | 'any';
 }

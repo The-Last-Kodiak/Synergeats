@@ -11,7 +11,16 @@ const GOALS = [
   { key: 'maintain', label: 'Maintain', desc: 'Stay balanced & healthy', color: '#3dba7e' },
 ];
 
-const ALLERGIES = ['Gluten', 'Dairy', 'Nuts', 'Shellfish', 'Soy', 'Eggs', 'Fish', 'Vegan'];
+const ALLERGIES = ['Gluten', 'Dairy', 'Nuts', 'Shellfish', 'Soy', 'Eggs', 'Fish'];
+const DIET_TYPES = [
+  { key: 'none', label: 'No Restriction' },
+  { key: 'vegan', label: 'Vegan' },
+  { key: 'vegetarian', label: 'Vegetarian' },
+  { key: 'fruitarian', label: 'Fruitarian' },
+  { key: 'keto', label: 'Keto' },
+  { key: 'paleo', label: 'Paleo' },
+  { key: 'carnivore', label: 'Carnivore' },
+];
 
 export default function Dashboard() {
   const { user, profile, todayLogs, refreshProfile } = useApp();
@@ -25,6 +34,7 @@ export default function Dashboard() {
   const [age, setAge] = useState('');
   const [hasDiabetes, setHasDiabetes] = useState(false);
   const [allergies, setAllergies] = useState<string[]>([]);
+  const [dietType, setDietType] = useState('none');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
 
@@ -71,6 +81,7 @@ export default function Dashboard() {
       age: parseInt(age) || 25,
       has_diabetes: hasDiabetes,
       allergies,
+      diet_type: dietType,
       onboarding_complete: true,
       updated_at: new Date().toISOString(),
     };
@@ -185,7 +196,20 @@ export default function Dashboard() {
               <div className="onboarding-step">
                 <h2>Any dietary considerations?</h2>
                 <p>We'll factor these into your recommendations.</p>
-                <label className="onboarding-checkbox">
+                <p className="onboarding-subhead">Diet Type</p>
+                <div className="onboarding-allergies">
+                  {DIET_TYPES.map(d => (
+                    <button
+                      type="button"
+                      key={d.key}
+                      className={`onboarding-allergy-btn${dietType === d.key ? ' onboarding-allergy-btn--active' : ''}`}
+                      onClick={() => setDietType(d.key)}
+                    >
+                      {d.label}
+                    </button>
+                  ))}
+                </div>
+                <label className="onboarding-checkbox" style={{ marginTop: 12 }}>
                   <input
                     type="checkbox"
                     checked={hasDiabetes}
